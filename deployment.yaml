@@ -3,15 +3,14 @@ kind: Deployment
 metadata:
   name: nodejs
 spec:
-  maxReplicas: 10
-  minReplicas: 7
+  replicas: 10
   selector:
     matchLabels:
       app: nodejs-app
   template:
     metadata:
       labels:
-        app: nodejs
+        app: nodejs-app
     spec:
       conatiners:
       - command:
@@ -31,15 +30,4 @@ spec:
         name: nodejs-container
         ports:
         - containerPort: 3000
-      metrics:
-      - type: Resource
-        resource:
-          name: cpu
-          targetAverageUtilization: 50
-      - type: Resource
-        resource:
-          name: memory
-          targetAverageUtilization: 60
-      priorityClassName: system-node-critical
-  type: LoadBalancer
 
