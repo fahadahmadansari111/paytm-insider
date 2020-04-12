@@ -7,4 +7,4 @@ Clone the repository and run the below command on a kubernetes cluster:
  - Run **kubectl create -f service.yaml** to expose the pods using an EC2 Classic Load Balancer on 3000 port.
  - For running the load on the application, use the below:
    - Run **kubectl run --generator=run-pod/v1 -it --rm load-generator --image=busybox /bin/sh** to run a pod so as to increase the load on the node-js pods
-   - When the shell for busybox opens, run **while true; do wget -1 -O- <master-ip>:<service-port-exposed>; done** This will load the app by hitting it multiple times
+   - When the shell for busybox opens, run **while true; do wget -1 -O- master-ip:service-port-exposed; done** This will load the app by hitting it multiple times
