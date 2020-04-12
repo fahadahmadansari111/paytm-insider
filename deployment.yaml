@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nodejs
+spec:
+  maxReplicas: 10
+  minReplicas: 7
+  selector:
+    matchLabels:
+      app: nodejs-app
+  template:
+    metadata:
+      labels:
+        app: nodejs
+    spec:
+      conatiners:
+      - command:
+        - /bin/sh
+        - -c
+        - |-
+          ACCOUNT=user
+          REGION=my-region
+          SECRET_NAME=${REGION}-ecr-registry
+          TOKEN = 'aws ecr get-login --region ${REGION} --registry-ids ${ACCOUNT} | cut -d'
+          kubectl create secret docker-registry $SECRET_NAME \
+          --docker-server=https://${ACCOUNT}.dkr.ecr.${REGION}.amazonaws.com \
+          --docker-username=AWS \
+          --docker-password="${TOKEN}" \
+          kubectl patch serviceaccount default -p '{"imagePullSecrets":[{"name":"'$SECRET_NAME'"}]}'
+      - image: ${ACCOUNT}.dkr.ecr.${REGION}.amazonaws.com/nodejs-test:latest
+        name: nodejs-container
+        ports:
+        - containerPort: 3000
+      metrics:
+      - type: Resource
+        resource:
+          name: cpu
+          targetAverageUtilization: 50
+      - type: Resource
+        resource:
+          name: memory
+          targetAverageUtilization: 60
+      priorityClassName: system-node-critical
+  type: LoadBalancer
+
